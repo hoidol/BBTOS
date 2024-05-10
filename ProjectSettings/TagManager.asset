@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Interact
+  - ExplorerArea
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Battle
+  - Water
+  - UI
+  - Draggable
+  - ExplorerArea
+  - Pointable
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Bg
+    uniqueID: 2841249525
+    locked: 0
+  - name: UnderObject
+    uniqueID: 2482340595
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 326602525
+    locked: 0
