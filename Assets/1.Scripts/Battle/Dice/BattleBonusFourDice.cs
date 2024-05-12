@@ -54,7 +54,7 @@ public class BattleBonusFourDice : MonoBehaviour
             transform.position = Vector2.Lerp(transform.position, end, Time.deltaTime * 10);
         }
 
-        CameraMgr.Instance.ZoomIn(end);
+        CameraMgr.Instance?.ZoomIn(end);
         yield return new WaitForSeconds(2);
         endCallback.Invoke(UnityEngine.Random.Range(0, 7));
     }

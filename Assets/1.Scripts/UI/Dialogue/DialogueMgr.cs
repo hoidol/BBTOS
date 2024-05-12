@@ -59,7 +59,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
             dialogueDic.Add(dialogue.idx,dialogue);
             dialogue.characterType = System.Enum.Parse<CharacterType>(array[i].Obj.GetString("name"));
             dialogue.type = System.Enum.Parse<DialogueType>(array[i].Obj.GetString("type"));
-            dialogue.script = array[i].Obj.GetString("script");
+            dialogue.script = array[i].Obj.GetString("script").Replace("\\n","\n");
 
             if (!string.IsNullOrEmpty(array[i].Obj.GetString("end")))
                 dialogue.end = true;
@@ -71,11 +71,11 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                 case DialogueType.Option:
                     DialogueOptionData oData = new DialogueOptionData();
                     dialogue.options.Add(oData);
-                    oData.script = array[i].Obj.GetString("option1");
+                    oData.script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
                     oData.disable = false;
                     oData = new DialogueOptionData();
                     dialogue.options.Add(oData);
-                    oData.script = array[i].Obj.GetString("option2");
+                    oData.script = array[i].Obj.GetString("option2").Replace("\\n", "\n");
                     oData.disable = true;
                     break;
                 case DialogueType.Check:
@@ -85,8 +85,8 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                     dialogue.mindScript = infos[1];
                     break;
                 case DialogueType.Mind:
-                    dialogue.script = array[i].Obj.GetString("option1");
-                    dialogue.mindScript = array[i].Obj.GetString("option2");
+                    dialogue.script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
+                    dialogue.mindScript = array[i].Obj.GetString("option2").Replace("\\n", "\n");
                     //array[i].Obj.GetString("info");
                     break;
                 case DialogueType.InteractResult:
@@ -94,18 +94,18 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
 
                     dialogue.interactResultDatas[0] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[0].locked = false;
-                    dialogue.interactResultDatas[0].script = array[i].Obj.GetString("option1");
+                    dialogue.interactResultDatas[0].script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
 
                     dialogue.interactResultDatas[1] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[1].locked = false;
-                    dialogue.interactResultDatas[1].script = array[i].Obj.GetString("option2");
+                    dialogue.interactResultDatas[1].script = array[i].Obj.GetString("option2").Replace("\\n", "\n");
 
                     dialogue.interactResultDatas[2] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[2].locked = true;
                     if (!string.IsNullOrEmpty(array[i].Obj.GetString("option3")))
                     {
                         dialogue.interactResultDatas[2].locked = false;
-                        dialogue.interactResultDatas[2].script = array[i].Obj.GetString("option3");
+                        dialogue.interactResultDatas[2].script = array[i].Obj.GetString("option3").Replace("\\n", "\n");
                     }
                     
                     
@@ -126,7 +126,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
     }
 
 
-
+    public List<GameObject> dialoguePanels = new List<GameObject>();
     //public List<Dialogue> dialogueStack = new List<Dialogue>();
     public int curIdx;
     public Action endCallback;
@@ -136,7 +136,15 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         curIdx = idx;
         nextBtnPanel.SetActive(false);
         optionPanel.SetActive(false);
+
+        for(int i=0;i< dialoguePanels.Count; i++)
+        {
+            Destroy(dialoguePanels[i].gameObject);
+        }
+        dialoguePanels.Clear();
+
         Open(() => {
+            Debug.Log("대사 나와라!");
             ShowDialogue();
         });
         //dialogueStack.AddRange(d);
@@ -160,13 +168,16 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         if (curMindDialoguePanel != null)
             return;
 
-
+        
         curDialogue = dialogueDic[curIdx];
 
         nextBtnPanel.SetActive(true);
         optionPanel.SetActive(false);
         playBtnPanel.SetActive(false);
         CharacterData cData = GetCharacterData(curDialogue.characterType);
+
+      
+        
 
         if (curDialogue.type == DialogueType.Normal ||
             curDialogue.type == DialogueType.Check ||
@@ -175,8 +186,8 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
 
             DialoguePanel dialoguePanel = Instantiate(dialoguePanelPrefab, parentTr);
             dialoguePanel.SetData(curDialogue,cData);
-            
-            if(curDialogue.type == DialogueType.Option)
+            dialoguePanels.Add(dialoguePanel.gameObject);
+            if (curDialogue.type == DialogueType.Option)
             {
                 optionPanel.SetActive(true);
                 nextBtnPanel.SetActive(false);
@@ -198,12 +209,14 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         {
             InteractResultDialoguePanel resultPanel = Instantiate(interactDialoguePanelPrefab, parentTr);
             resultPanel.SetData(curDialogue, cData);
+            dialoguePanels.Add(resultPanel.gameObject);
         }
         else if (curDialogue.type == DialogueType.Mind)
         {
             playBtnPanel.SetActive(true);
             curMindDialoguePanel = Instantiate(mindDialgouePanelPrefab, parentTr);
             curMindDialoguePanel.SetData(curDialogue,cData);
+            dialoguePanels.Add(curMindDialoguePanel.gameObject);
         }
 
         thumImg.gameObject.SetActive(true);
@@ -217,11 +230,19 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
             return;
         if (dialogueDic[curIdx].end)
         {
+            
             EndDialogue();
             return;
         }
         curIdx++;
         ShowDialogue();
+        if (curDialogue.type == DialogueType.Check)
+        {
+            SoundMgr.Instance?.PlaySound("AutoCheckSuc");
+        }else
+        {
+            SoundMgr.Instance?.PlaySound("Button");
+        }
     }
 
     public void OnClickedPlayBtn()
@@ -231,6 +252,8 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         SkillMgr.Instance.skillInfos[7].gameObject.SetActive(false);
         playBtnPanel.SetActive(false);
         nextBtnPanel.SetActive(true);
+
+        SoundMgr.Instance?.PlaySound("Skill8");
     }
 
     public CharacterData GetCharacterData(CharacterType type)
@@ -259,9 +282,9 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         if (_opened)
             return;
 
+        SoundMgr.Instance?.PlaySound("TalkUI");
         canvas.gameObject.SetActive(true);
         _opened = true;
-
         moving = true;
         movingCallback = oCallback ;
         
@@ -284,14 +307,9 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
     //확실하게 다 열린다음에 글씨보이게
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            _opened = !_opened;
-        }
 
         if (_opened)
         {
-
             if (Vector2.SqrMagnitude( dialoguePanelRecTr.anchoredPosition - otherPosition)<0.1f && moving)
             {
                 moving = false;

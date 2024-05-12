@@ -56,6 +56,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
 
         battleOption.bottomInfoObject.gameObject.SetActive(false);
         battleOption.dialogueText.text = startBattleDialogue;
+        SoundMgr.Instance?.PlaySound(key);
     }
     public virtual void EndBattle()
     {
@@ -68,8 +69,10 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
     {
         //battleOption.gameObject.SetActive(true);
         //battleOption.dialogueText.text = roundBehaviourInfos[round].roundStartScript;
+        Debug.Log($"Key {key}   releaseDebuff {skillApplyInfos[round].releaseDebuff}");
         if (skillApplyInfos[round].releaseDebuff != 0)
         {
+            Debug.Log($"버프 해제 Key {key}   releaseDebuff {skillApplyInfos[round].releaseDebuff}");
             debuffObj.SetActive(false);
         }
     }
@@ -79,6 +82,8 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         battleOption.gameObject.SetActive(true);
         battleOption.bottomInfoObject.gameObject.SetActive(true);
         battleOption.dialogueText.text = roundBehaviourInfos[round].roundSelectInfos[0].script;
+
+        SoundMgr.Instance?.PlaySound(key);
 
         target = roundBehaviourInfos[round].roundSelectInfos[0].target.GetComponent<IBattleUnit>();
 
@@ -109,42 +114,63 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
             dice.transform.DOScale(1, 0.3f);
             diceList.Add(dice);
         }
+
+
+        if(skillApplyInfos[round].replaceDiceObject != null)
+        {
+            skillApplyInfos[round].replaceDiceObject.transform.localScale = Vector3.zero;
+            skillApplyInfos[round].replaceDiceObject.transform.DOScale(1, 0.3f);
+            skillApplyInfos[round].replaceDiceObject.SetActive(true);
+        }
     }
 
 
     public virtual void ApplySkill(int round, Action endEffect)
     {
-        if (diceList.Count <= 0)
+        if (diceList.Count > 0)
         {
-            endEffect.Invoke();
-            return;
-        }
-            
-        StartCoroutine(CoApplySkill(round, endEffect));
-    }
-
-    IEnumerator CoApplySkill(int round, Action endEffect)
-    {
-        yield return new WaitForSeconds(0.5f);
-        for (int i = 0; i < diceList.Count; i++)
-        {
-            diceList[i].MoveTo(target.DiceTargetPointTr.position, true, (dice) =>
+            for (int i = 0; i < diceList.Count; i++)
             {
-
-                endEffect?.Invoke();
-            });
+                diceList[i].MoveTo(target.DiceTargetPointTr.position, true, (dice) =>
+                {
+                    if (skillApplyInfos[round].damage != 0)
+                        targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
+                    if (skillApplyInfos[round].heal != 0)
+                        targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                    targetEnemy.Debuff(skillApplyInfos[round].debuff);
+                    endEffect?.Invoke();
+                });
+            }
         }
-        if (skillApplyInfos[round].damage != 0)
-            targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
-        if(skillApplyInfos[round].heal != 0)
-            targetEnemy.ChangeHp(skillApplyInfos[round].heal);
-        targetEnemy.Debuff(skillApplyInfos[round].debuff);
+        else
+        {
+
+            if (skillApplyInfos[round].damage != 0)
+                targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
+            if (skillApplyInfos[round].heal != 0)
+                targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+            targetEnemy.Debuff(skillApplyInfos[round].debuff);
+
+            endEffect.Invoke();
+        }
+        
+ 
     }
+
     public virtual void EndRound(int round)
     {
         pointer.gameObject.SetActive(false);
         battleOption.bottomInfoObject.gameObject.SetActive(false);
         battleOption.dialogueText.text = roundBehaviourInfos[round].roundEndScript;
+        SoundMgr.Instance?.PlaySound(key);
+
+
+
+        if (skillApplyInfos[round].replaceDiceObject != null)
+        {
+            skillApplyInfos[round].replaceDiceObject.transform.DOScale(0, 0.2f);
+            skillApplyInfos[round].replaceDiceObject.SetActive(false);
+        }
     }
 
     public virtual void EndSelect(int round)
@@ -163,10 +189,11 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
             });
             hpText.text = "+"+amount;
             hpText.color = Color.green;
-            
+            SoundMgr.Instance?.PlaySound("Heal");
         }
         else if(amount < 0)
         {
+            SoundMgr.Instance?.PlaySound("Attack");
             hpText.transform.DOScale(1, 0.1f).OnComplete(()=> {
                 hpText.transform.DOScale(0, 0.3f).SetDelay(2);
             });

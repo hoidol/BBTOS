@@ -9,7 +9,7 @@ public class SkillEntryPanel : MonoBehaviour
     [HideInInspector] public Image skillImage;
     private void Start()
     {
-        
+        GetComponent<Button>().onClick.AddListener(OnButtonBtn);   
         skillImage = transform.Find("SkillImage").GetComponent<Image>();
         skillImage.sprite = SkillMgr.Instance.skillDic[skillName].sprite;
     }

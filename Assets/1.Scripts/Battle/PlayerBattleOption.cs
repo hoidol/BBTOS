@@ -96,12 +96,20 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
             scriptText.color = Color.gray;
         }
     }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-
-        if (PlayerBattleOption.focusOption != null )
+        if (PlayerBattleOption.focusOption != null)
         {
-            PlayerBattleOption.focusOption.Focus(false);
+            if(selectedOption== null)
+            {
+                PlayerBattleOption.focusOption.Focus(false);
+            }
+            else
+            {
+                if (selectedOption != this)
+                    return;
+            }
         }
 
         PlayerBattleOption.focusOption = this;
@@ -110,14 +118,12 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-
+       
     }
     IBattleUnit targetUnit;
     SelectOptionInfo curSelectOptionInfo;
     public void Focus(bool b)
     {
-        
-
         if (b)
         {
             Debug.Log("포커스 잡기" +idx);
@@ -162,7 +168,9 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
 
         if (PlayerBattleOption.selectedOption != null)
             return;
-            
+
+        if (BattleCat.Instance.diceMoving)
+            return;
         focusOutlineAnimator.Play("Selected");
         selectedOption = this;
 
@@ -170,13 +178,30 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
         PlayerBattleOption.selectedOption = this;
         BattlePlayer.Instance.endTurnButton.SetActive(true);
         Debug.Log("BattlePlayerOption OnClickedBtn");
+        SoundMgr.Instance?.PlaySound("Button");
+
+        BattleMgr.Instance.endTurnBtn.SetActive(true);
+        SoundMgr.Instance?.PlaySound($"Skill{curSkill.skillNumber}"); 
+
     }
 
     public void ChangeSkill(Skill s)
     {
         if (selectOptionInfo.disableChoice)
             return;
+        if(selectedOption != null)
+        {
+            selectedOption.Focus(false);
+        }
+        focusOutlineAnimator.Play("Selected");
+        selectedOption = this;
 
+        skillListPanel.SetActive(false);
+        PlayerBattleOption.selectedOption = this;
+        BattlePlayer.Instance.endTurnButton.SetActive(true);
+        Debug.Log("BattlePlayerOption OnClickedBtn");
+        SoundMgr.Instance?.PlaySound("Button");
+        selectedOption = this;
         curSkill = s;
         curSkillImage.sprite = s.sprite;
         skillListPanel.SetActive(false);

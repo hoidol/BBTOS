@@ -18,7 +18,7 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
 
     public GameObject diceGroupObject;
     //public Transform diceRollingPoint;
-    public Transform addDiceRollingPoint;
+    //public Transform addDiceRollingPoint;
 
     public string startBattleDialogue;
     public RoundBehaviourInfo[] roundBehaviourInfos;
@@ -45,6 +45,7 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         playerPanel.SetActive(true);
         bubble.gameObject.SetActive(true);
         bubble.dialogueText.text = startBattleDialogue;
+        SoundMgr.Instance?.PlaySound("Alice");
     }
 
     public void EndBattle()
@@ -64,8 +65,6 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         {
             battleOptions[i].StartRound();
         }
-
-        
     }
 
     public void StartSelect(int round)
@@ -77,54 +76,41 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
             battleOptions[i].gameObject.SetActive(true);
             battleOptions[i].StartSelect(round);
         }
+        SoundMgr.Instance?.PlaySound("Alice");
     }
     public void UpdatePointer(int round)
     {
        
     }
+    List<BattleDice> curDices = new List<BattleDice>();
+    SelectOptionInfo curOptionInfo;
     public  void Roll(int round)
     {
         targetUnit = roundBehaviourInfos[round].roundSelectInfos[PlayerBattleOption.selectedOption.idx].target.GetComponent<IBattleUnit>();
 
         diceGroupObject.SetActive(true);
-        if (BattleCat.Instance.isBonus)
-        {
-            addDiceRollingPoint.gameObject.SetActive(true);
-        }
-        else
-        {
-            addDiceRollingPoint.gameObject.SetActive(false);
-        }
-        //targetUnit = 
-        StartCoroutine(CoRoll(round));
-    }
-    List<BattleDice> curDices = new List<BattleDice>();
-    SelectOptionInfo curOptionInfo;
-    IEnumerator CoRoll(int round)
-    {
-        yield return null;
         curDices.Clear();
 
         curOptionInfo = roundBehaviourInfos[round].roundSelectInfos[PlayerBattleOption.selectedOption.idx];
+        Debug.Log($"curDices.Count {curDices.Count}");
+        for (int i = 0; i < curOptionInfo.diceTypes.Length; i++)
+        {
+            BattleDice dice = BattleDice.Instantiate(curOptionInfo.diceTypes[i]);
+            dice.SetNumber(curOptionInfo.diceNumbers[i]);
+            dice.transform.position = (Vector2)PlayerBattleOption.selectedOption.dicePoint.position + Vector2.one * i * 0.5f;
+            curDices.Add(dice);
+        }
 
         
-        if (BattleCat.Instance.isBonus)
-        {
-            BattleDice dice = BattleDice.Instantiate(PlayerBattleOption.selectedOption.curSkill.diceType);
-            curDices.Add(dice);
-        }
-
-        for (int i = 0; i < PlayerBattleOption.selectedOption.curSkill.diceCount; i++)
-        {
-            BattleDice dice = BattleDice.Instantiate(PlayerBattleOption.selectedOption.curSkill.diceType);
-            curDices.Add(dice);
-        }
-
-        for (int i = 0; i < curDices.Count; i++)
-        {
-            curDices[i].transform.position = (Vector2)PlayerBattleOption.selectedOption.dicePoint.position + Vector2.one * i * 0.5f;
-        }
+        
+        //StartCoroutine(CoRoll(round));
     }
+    
+    //IEnumerator CoRoll(int round)
+    //{
+    //    yield return null;
+        
+    //}
     public virtual void ApplySkill(int round, Action endEffect)
     {
         StartCoroutine(CoApplySkill(round, endEffect));
@@ -138,22 +124,33 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
             nums[i] = curDices[i].curNumber;
         }
 
-        for (int i = 0; i < curDices.Count; i++)
+        if (!skillApplyInfos[round].dontMoveDice)
         {
-            curDices[i].MoveTo(targetUnit.DiceTargetPointTr.position, true, (dice) =>
+            for (int i = 0; i < curDices.Count; i++)
             {
-                
-            });
+                curDices[i].MoveTo(targetUnit.DiceTargetPointTr.position, true, (dice) =>
+                {
+
+                });
+            }
         }
+        else
+        {
+            for (int i = 0; i < curDices.Count; i++)
+            {
+                curDices[i].transform.DOScale(0, 0.3f).SetDelay(0.7f);
+            }
+        }
+        
         yield return new WaitForSeconds(1);
         PlayerBattleOption.selectedOption.curSkill.ExcuteSkill(targetUnit, nums);
-
-
         BattleEnemy enemy = curOptionInfo.target.GetComponent<BattleEnemy>();
 
+        if(skillApplyInfos[round].damage != 0)
+            enemy.ChangeHp(skillApplyInfos[round].damage);
 
-        enemy.ChangeHp(skillApplyInfos[round].damage);
-        enemy.ChangeHp(skillApplyInfos[round].heal);
+        if (skillApplyInfos[round].heal != 0)
+            enemy.ChangeHp(skillApplyInfos[round].heal);
 
         endEffect.Invoke();
     }
@@ -164,11 +161,14 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         {
             battleOptions[i].pointer.gameObject.SetActive(false);
             battleOptions[i].focusOutlineAnimator.gameObject.SetActive(false);
+            if (battleOptions[i].skillListPanel != null)
+                battleOptions[i].skillListPanel.gameObject.SetActive(false);
             if (PlayerBattleOption.selectedOption != battleOptions[i])
             {
                 battleOptions[i].gameObject.SetActive(false);
             }
         }
+
 
     }
 
@@ -188,7 +188,7 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         optionPanel.SetActive(false);
         bubble.gameObject.SetActive(true);
         bubble.dialogueText.text = BattlePlayer.Instance.roundBehaviourInfos[round].roundEndScript;
-
+        SoundMgr.Instance?.PlaySound("Alice");
         PlayerBattleOption.selectedOption = null;
     }
 
@@ -197,6 +197,11 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
     {
         //플레이어가 뭔가를 선택해야지 완료 누를 수 있음
         //PlayerBattleOption.selectedOption 선택한 옵션
+
+        if (PlayerBattleOption.selectedOption.curSkill.skillNumber != skillApplyInfos[BattleMgr.Instance.curRound].skillNumber)
+            return;
+
+        SoundMgr.Instance?.PlaySound("Button");
         BattleMgr.Instance.EndTurn();
     }
 
@@ -237,6 +242,9 @@ public class SkillApplyInfo
     public int heal;
     public int debuff;
     public int releaseDebuff;
+    public bool dontMoveDice;
+    public GameObject replaceDiceObject;
+    public int skillNumber;
 
 
 }

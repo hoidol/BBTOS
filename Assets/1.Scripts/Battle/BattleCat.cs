@@ -10,7 +10,7 @@ public class BattleCat : MonoSingleton<BattleCat>, IBattleUnit
     public CatBattleOption catBattleOption;
 
     public bool isBonus;
-
+    public bool diceMoving;
     public Transform DiceTargetPointTr => null;
     public Transform EndTargetPointTr => null;
 
@@ -67,6 +67,7 @@ public class BattleCat : MonoSingleton<BattleCat>, IBattleUnit
             catBattleOption.autoCheckImage.sprite = Resources.Load<Sprite>("Sprites/AutoCheck_Suc");
             catBattleOption.autoCheckText.color = autoCheckSucColor;
             catBattleOption.autoCheckText.text = "청각 굴림 성공";
+            SoundMgr.Instance?.PlaySound("AutoCheckSuc");
             isBonus = true;
         }
         else
@@ -74,8 +75,10 @@ public class BattleCat : MonoSingleton<BattleCat>, IBattleUnit
             catBattleOption.autoCheckImage.sprite = Resources.Load<Sprite>("Sprites/AutoCheck_Fail");
             catBattleOption.autoCheckText.color = autoCheckFailColor;
             catBattleOption.autoCheckText.text = "청각 굴림 실패";
+            SoundMgr.Instance?.PlaySound("AutoCheckFail");
 
         }
+        
         StartCoroutine(CoRollBonus(round,endCallback));
     }
 
@@ -86,8 +89,10 @@ public class BattleCat : MonoSingleton<BattleCat>, IBattleUnit
         yield return new WaitForSeconds(1);
         if (catBehaviours[round].success)
         {
+            diceMoving = true;
             dice.transform.DOMove(successBonusDicePoint.position, 1).OnComplete(()=> {
                 bonusDiceUI.gameObject.SetActive(true);
+                diceMoving = false;
             });
             dice.diceSpriteRdr.DOFade(0, 0.3f).SetDelay(.7f);
         }
@@ -96,8 +101,8 @@ public class BattleCat : MonoSingleton<BattleCat>, IBattleUnit
             dice.diceSpriteRdr.DOFade(0, 0.3f).SetDelay(.7f);
         }
 
-        yield return new WaitForSeconds(1);
-        catPanel.SetActive(false);
+        //yield return new WaitForSeconds(1);
+        //catPanel.SetActive(false);
         endCallback?.Invoke();
     }
 

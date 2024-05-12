@@ -19,6 +19,7 @@ public class Dice : MonoSingleton<Dice>
 
     public void Roll(Vector2 start,int diceNumber, Action<int> endCallback)
     {
+        SoundMgr.Instance?.PlaySound("Dice");
         gameObject.SetActive(true);
         diceImage.sprite = Resources.Load<Sprite> ($"Sprites/Dice_zoom_{diceNumber}");
         transform.position = start;
@@ -38,10 +39,12 @@ public class Dice : MonoSingleton<Dice>
             transform.position = Vector2.Lerp(transform.position, end, Time.deltaTime * 6);
         }
         
-        CameraMgr.Instance.ZoomIn(zoomInTr.position);
+        //CameraMgr.Instance.ZoomIn(zoomInTr.position);
         zoomCanvas.gameObject.SetActive(true);
-        yield return new WaitForSeconds(3);
-        
+        yield return new WaitForSeconds(1);
+        SoundMgr.Instance?.PlaySound("DiceResult");
+        yield return new WaitForSeconds(1);
+
         endCallback.Invoke(UnityEngine.Random.Range(0, 7));
 
         //yield return new WaitForSeconds(3);

@@ -19,6 +19,7 @@ public class FadeEffect : MonoSingleton<FadeEffect>
     public void PlayFadeOutAndIn(float time, Action endFadeOut, Action endFadeIn)
     {
         gameObject.SetActive(true);
+        canvasGroup.alpha = 0;
         StartCoroutine(CoFadeOut(time, endFadeOut, endFadeIn));
     }
 

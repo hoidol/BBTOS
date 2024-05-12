@@ -15,19 +15,30 @@ public class SkillInfoPanel : MonoBehaviour
         Skill skill = SkillMgr.Instance.GetSkill(skillNumber);
         nameText.text = skill.skillName;
         infoText.text = skill.skillInfo;
-        for(int  i=0;i< diceImages.Length; i++)
+
+        if (skill.diceCount > 0)
         {
-            if (i < skill.diceCount)
+            for (int i = 0; i < diceImages.Length; i++)
             {
-                diceImages[i].sprite = Resources.Load<Sprite>($"Sprites/DiceThum_{skill.diceType}");
-                diceImages[i].gameObject.SetActive(true);
+                if (i < skill.diceCount)
+                {
+                    diceImages[i].sprite = Resources.Load<Sprite>($"Sprites/DiceThum_{skill.diceType}");
+                    diceImages[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    diceImages[i].gameObject.SetActive(false);
+                }
             }
-            else
+        }
+        else
+        {
+            for (int i = 0; i < diceImages.Length; i++)
             {
                 diceImages[i].gameObject.SetActive(false);
             }
-            
         }
+        
         
     }
 }

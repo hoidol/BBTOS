@@ -89,10 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae96ac99b39464c9599f7aebbaeb2ea3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skill:
-    sprite: {fileID: 0}
-    name: 
-    targetUnitType: 1
+  skillName: 
+  skillNumber: 
   skillImage: {fileID: 0}
 --- !u!1 &1739999261122106442
 GameObject:
@@ -766,10 +764,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae96ac99b39464c9599f7aebbaeb2ea3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skill:
-    sprite: {fileID: 0}
-    name: 
-    targetUnitType: 1
+  skillName: 
+  skillNumber: 
   skillImage: {fileID: 0}
 --- !u!1 &5753722611524698060
 GameObject:
@@ -1054,18 +1050,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322bd18bacde3461882664915f78ffe7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetOption: {fileID: 0}
+  endPointTr: {fileID: 0}
+  idx: 0
   skillListPanel: {fileID: 6740139646598750032}
   skillEntryPanels:
   - {fileID: 7524948364752564702}
   - {fileID: 2803115295655797782}
   - {fileID: 1587106785225041620}
+  skillNumber: 0
+  curSkill: {fileID: 0}
   dicePoint: {fileID: 2526874473533897189}
   focusOutlineAnimator: {fileID: 1686073075108620237}
-  diceGroupObject: {fileID: 7594565053024450527}
-  diceImage: {fileID: 1941213138382134889}
-  addDiceImage: {fileID: 5142813597189551238}
+  scriptText: {fileID: 0}
+  bubbleTagImage: {fileID: 0}
+  bubbleTagText: {fileID: 0}
   curSkillImage: {fileID: 8132128721409549332}
+  pointer: {fileID: 0}
+  pointColor: {r: 0, g: 0, b: 0, a: 0}
+  diceType: 0
+  diceThrowCount: 0
+  skillDiceImgs: []
+  skillInfoPopUp: {fileID: 0}
 --- !u!61 &1506521310339026628
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1407,8 +1412,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uACF5\uACA9\uD558\uAE30\uACF5\uACA9\uD558\uAE30\uACF5\uACA9\uD558"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
-  m_sharedMaterial: {fileID: 7753038804630181194, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1cdd159632529418c85d056832b0577e, type: 2}
+  m_sharedMaterial: {fileID: 6287953807203330764, guid: 1cdd159632529418c85d056832b0577e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1563,10 +1568,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae96ac99b39464c9599f7aebbaeb2ea3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skill:
-    sprite: {fileID: 0}
-    name: 
-    targetUnitType: 1
+  skillName: 
+  skillNumber: 
   skillImage: {fileID: 0}
 --- !u!1 &9184403950286257506
 GameObject:

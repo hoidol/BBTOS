@@ -21,9 +21,10 @@ public class MindDialgouePanel : MonoBehaviour
         dialogueText.text = dialogue.script;
 
     }
-
+    public Color mindColor;
     public void OpenMind()
     {
         dialogueText.text = dialogue.mindScript;
+        dialogueText.color = mindColor;
     }
 }

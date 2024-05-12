@@ -11,6 +11,9 @@ public class InteractObject : MonoBehaviour
     public bool interacted;
     public int diceNumber;
 
+    public GameObject hoObject;
+    public string foundText;
+
     private void Awake()
     {
       //  bodyTr.gameObject.SetActive(false);
@@ -35,9 +38,9 @@ public class InteractObject : MonoBehaviour
             });
             yield return new WaitUntil(() => next);
             yield return new WaitForSeconds(0.5f);
-            endCallback.Invoke();
         }
-
+        hoObject.SetActive(false);
+        endCallback.Invoke();
         interacted = true;
     }
         

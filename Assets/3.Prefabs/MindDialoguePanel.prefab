@@ -68,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC548\uB155\uD558\uC138\uC694"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
-  m_sharedMaterial: {fileID: 7753038804630181194, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1cdd159632529418c85d056832b0577e, type: 2}
+  m_sharedMaterial: {fileID: 6287953807203330764, guid: 1cdd159632529418c85d056832b0577e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -428,8 +428,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC568\uB9AC\uC2A4"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
-  m_sharedMaterial: {fileID: 7753038804630181194, guid: dd4448b94a94c4700a2fe2a20d8cb160, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1cdd159632529418c85d056832b0577e, type: 2}
+  m_sharedMaterial: {fileID: 6287953807203330764, guid: 1cdd159632529418c85d056832b0577e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -667,6 +667,7 @@ MonoBehaviour:
   nameText: {fileID: 4299466179759277948}
   dialogueText: {fileID: 3543073051293639645}
   barImage: {fileID: 3486204902604807132}
+  mindColor: {r: 0.10980392, g: 0.8862745, b: 1, a: 1}
 --- !u!114 &1455788553418082565
 MonoBehaviour:
   m_ObjectHideFlags: 0

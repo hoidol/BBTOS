@@ -10,7 +10,7 @@ public class GameMgr : MonoSingleton<GameMgr>
     public GameModeType curModeType;
     public override void Awake()
     {
-        gameModes = FindObjectsOfType<GameMode>(true);
+        //gameModes = FindObjectsOfType<GameMode>(true);
     }
 
     
@@ -26,16 +26,19 @@ public class GameMgr : MonoSingleton<GameMgr>
 
     public void Start()
     {
+        SoundMgr.Instance.PlayBGM(0);
         curModeType = GameModeType.Normal;
         curGameMode = GetGameMode(curModeType);
         curGameMode.StartMode();
-        FadeEffect.Instance.PlayFadeIn(1, () =>
+        
+        Invoke("StartGame", 1);
+    }
+
+    void StartGame()
+    {
+        DialogueMgr.Instance.StartDialogue(0, () =>
         {
 
-            DialogueMgr.Instance.StartDialogue(0, () =>
-            {
-
-            });
         });
     }
 

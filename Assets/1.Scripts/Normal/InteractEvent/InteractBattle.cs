@@ -7,8 +7,6 @@ public class InteractBattle : InteractEvent
     bool interacting;
     public override void Interact(Action eCallback)
     {
-       
-        
         interacting = true;
         StartCoroutine(CoWaitEndBattle(eCallback));
     }
@@ -23,6 +21,8 @@ public class InteractBattle : InteractEvent
         FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
         {
             
+            GameMgr.Instance.gameModes[0].gameObject.SetActive(false);
+            GameMgr.Instance.gameModes[1].gameObject.SetActive(true);
         }, () => {
             GameMgr.Instance.SwitchMode(GameModeType.Battle);
         });

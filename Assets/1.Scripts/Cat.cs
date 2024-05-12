@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class Cat : MonoSingleton<Cat>
 {
     //진입 시 바로 대화
@@ -20,24 +20,26 @@ public class Cat : MonoSingleton<Cat>
     // 속마음 말풍선 시
     // 연주하기 버튼 누를 수 있음
     // 속마음을 말하게됨
-
+    bool interacting;
     public Transform originPoint;
     public Transform bodyTr;
     public bool draging;
     public LayerMask dragableLayerMask;
-
+    public LayerMask interactMask;
     //Vector2 startPoint;
     Vector2 dragVector;
     bool found;
 
     InteractObject foundInteractObject;
     public GameObject holy;
+    public GameObject worldCanvasObject;
+    public TMP_Text foundText;
     void Update()
     {
         if (GameMgr.Instance.curModeType != GameModeType.Normal)
             return;
-        if (DialogueMgr.Instance.opened)
-            return;
+
+        
 
         if (!draging)
         {
@@ -57,7 +59,6 @@ public class Cat : MonoSingleton<Cat>
                             StartRoll(cols[i].GetComponent<InteractObject>());
                         }
                     }
-
                 }
 
                 if (!found)
@@ -69,9 +70,12 @@ public class Cat : MonoSingleton<Cat>
             }
             foundInteractTimer -= Time.deltaTime;
         }
-
-        if(Input.GetMouseButtonDown(0))
+        if (DialogueMgr.Instance.opened)
+            return;
+        if (Input.GetMouseButtonDown(0))
         {
+            if (interacting)
+                return;
             foundInteractObject = null;
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Collider2D col = Physics2D.OverlapPoint(worldPoint, dragableLayerMask);
@@ -86,6 +90,9 @@ public class Cat : MonoSingleton<Cat>
         else if (Input.GetMouseButton(0))
         {
             if (!draging)
+                return;
+
+            if (interacting)
                 return;
 
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -103,37 +110,67 @@ public class Cat : MonoSingleton<Cat>
             {
                 distance = 5;
                 float x = Mathf.Sin(angle * Mathf.Deg2Rad) * distance; // 
-                float y = Mathf.Cos(angle * Mathf.Deg2Rad) * distance * 0.6f; // 
-
+                float y = Mathf.Cos(angle * Mathf.Deg2Rad) * distance * 0.56f; // 
 
                 transform.position = (Vector2)Player.Instance.transform.position + new Vector2(x, y);
             }
             else
             {
                 transform.position = point;
-                    distance = direction.magnitude;
+                //distance = direction.magnitude;
             }
 
-
-
+            if (!found)
+            {
+                Collider2D[] cols = Physics2D.OverlapBoxAll((Vector2)transform.position + offset, size, 0, interactMask);
+                for (int i = 0; i < cols.Length; i++)
+                {
+                    if (cols[i].CompareTag("Interact"))
+                    {
+                        Debug.Log("상호작용 만남");
+                        if (cols[i].GetComponent<InteractObject>().interacted)
+                            continue;
+                        interacting = true;
+                        SoundMgr.Instance?.PlaySound("Interaction");
+                        holy.SetActive(true);
+                        found = true;
+                        worldCanvasObject.SetActive(true);
+                        foundText.text = cols[i].GetComponent<InteractObject>().foundText;
+                        foundInteractTimer = 2;
+                    }
+                }
+            }
+            //else
+            //{
+            //    Collider2D[] cols = Physics2D.OverlapBoxAll((Vector2)transform.position + offset, size, 0, interactMask);
+            //    if(cols.Length <= 0)
+            //    {
+            //        interacting = false;
+            //        interacting = false;
+            //        holy.SetActive(false);
+            //    }
+            //}
+            
         }
         else if (Input.GetMouseButtonUp(0))
         {
             if (!draging)
                 return;
-            Collider2D[] cols = Physics2D.OverlapBoxAll((Vector2)transform.position + offset, size,0);
-            for(int i = 0; i < cols.Length; i++)
-            {
-                if (cols[i].CompareTag("Interact"))
-                {
-                    Debug.Log("상호작용 만남");
-                    if (cols[i].GetComponent<InteractObject>().interacted)
-                        continue;
-                    holy.SetActive(true);
-                    found = true;
-                    foundInteractTimer = 2;
-                }
-            }
+
+            //Collider2D[] cols = Physics2D.OverlapBoxAll((Vector2)transform.position + offset, size,0);
+            //for(int i = 0; i < cols.Length; i++)
+            //{
+            //    if (cols[i].CompareTag("Interact"))
+            //    {
+            //        Debug.Log("상호작용 만남");
+            //        if (cols[i].GetComponent<InteractObject>().interacted)
+            //            continue;
+            //        SoundMgr.Instance.PlaySound("Interaction");
+            //        holy.SetActive(true);
+            //        found = true;
+            //        foundInteractTimer = 2;
+            //    }
+            //}
 
             draging = false;
         }
@@ -141,15 +178,18 @@ public class Cat : MonoSingleton<Cat>
 
     void StartRoll(InteractObject interactObj)
     {
-        
+
         foundInteractObject = interactObj;
         
         Dice.Instance.Roll(bodyTr.transform.position, interactObj.diceNumber, (number) =>
         {
             holy.SetActive(false);
+            worldCanvasObject.SetActive(false);
             foundInteractObject.Found(number,()=> {
                 foundInteractObject = null;
                 found = false;
+                interacting = false;
+                draging = false;
             });
         });
     }

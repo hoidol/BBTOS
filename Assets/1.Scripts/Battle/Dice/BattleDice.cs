@@ -19,12 +19,19 @@ public class BattleDice : MonoBehaviour
         BattleDice dicePrefab = Resources.Load<BattleDice>($"Prefabs/Battle{diceType}Dice");
         BattleDice dice = Instantiate(dicePrefab);
         dice.diceSpriteRdr.color = Color.white;
+        dice.transform.DOScale(dice.initScale, 0.3f);
+        SoundMgr.Instance?.PlaySound("Dice");
         return dice;
-
+    }
+    public float initScale;
+    private void Awake()
+    {
+        initScale = transform.localScale.x;
     }
     public virtual void SetNumber(int number)
     {
-        diceSpriteRdr.sprite = Resources.Load<Sprite>($"{number}_{diceType}");
+        Debug.Log($"{number}_{diceType}");
+        diceSpriteRdr.sprite = Resources.Load<Sprite>($"Sprites/{number}_{diceType}");
     }
 
     public void Roll(Vector2 end, Action<int> endCallback)

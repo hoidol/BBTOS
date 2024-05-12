@@ -10,6 +10,7 @@ public class BattleMode : GameMode
     public GameObject enemyArea;
     public Transform[] enemyAreaPoint; //0 -> 1
 
+    public InteractEvent[] endBattleEvents;
     private void OnEnable()
     {
         playerArea.transform.position = playerAreaPoint[0].position;
@@ -18,6 +19,7 @@ public class BattleMode : GameMode
 
     private void Start()
     {
+        //Time.timeScale = 2.5f;
         //StartMode();
     }
 
@@ -56,8 +58,25 @@ public class BattleMode : GameMode
         //GameMgr.Instance.SwitchMode(GameModeType.Normal);
         FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
         {
-            
-        }, () => { GameMgr.Instance.SwitchMode(GameModeType.Normal); });
+            SoundMgr.Instance.PlayBGM(2);
+
+            GameMgr.Instance.gameModes[0].gameObject.SetActive(true);
+            GameMgr.Instance.gameModes[1].gameObject.SetActive(false);
+        }, () => { GameMgr.Instance.SwitchMode(GameModeType.Normal);
+            endBattleEvents[0].Interact(() => {
+
+                FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
+                {
+                    endBattleEvents[1].Interact(() =>
+                    {
+                    });
+                }, () =>
+                {
+                });
+                
+            });
+
+        });
         gameObject.SetActive(false);
     }
 }

@@ -8,6 +8,7 @@ public class InteractEnemy : MonoBehaviour
     public InteractObject[] interactObjects;
     public InteractEvent[] interactEvents;
     public GameObject bodyObj;
+    public GameObject candyObj;
 
     public bool interacting;
     public bool interacted;
@@ -23,7 +24,7 @@ public class InteractEnemy : MonoBehaviour
         interacting = true;
 
         StartCoroutine(CoInteract(()=> {
-
+            candyObj.SetActive(false);
         }));
     }
 
@@ -36,10 +37,11 @@ public class InteractEnemy : MonoBehaviour
                 next = true;
             });
             yield return new WaitUntil(() => next);
-            yield return new WaitForSeconds(0.5f);
-            endCallback.Invoke();
-        }
 
+            Debug.Log($"InteractEnemy {i} 완료");
+            yield return new WaitForSeconds(0.5f);
+        }
+        endCallback.Invoke();
         interacted = true;
     }
     // Update is called once per frame
