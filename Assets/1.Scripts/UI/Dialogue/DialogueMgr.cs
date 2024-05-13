@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Boomlagoon.JSON;
+using TMPro;
+
 public class DialogueMgr : MonoSingleton<DialogueMgr>
 {
     public DialogueCanvas canvas;
@@ -33,6 +35,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
 
     public Image thumImg;
     public CharacterData[] characterDatas;
+    public TMP_Text nextText;
 
     Dictionary<int, Dialogue> dialogueDic = new Dictionary<int, Dialogue>();
 
@@ -60,7 +63,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
             dialogue.characterType = System.Enum.Parse<CharacterType>(array[i].Obj.GetString("name"));
             dialogue.type = System.Enum.Parse<DialogueType>(array[i].Obj.GetString("type"));
             dialogue.script = array[i].Obj.GetString("script").Replace("\\n","\n");
-
+            dialogue.script = dialogue.script.Replace("\\\"", "\"");
             if (!string.IsNullOrEmpty(array[i].Obj.GetString("end")))
                 dialogue.end = true;
             else
@@ -72,10 +75,13 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                     DialogueOptionData oData = new DialogueOptionData();
                     dialogue.options.Add(oData);
                     oData.script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
+                    oData.script = oData.script.Replace("\\\"", "\"");
                     oData.disable = false;
+
                     oData = new DialogueOptionData();
                     dialogue.options.Add(oData);
                     oData.script = array[i].Obj.GetString("option2").Replace("\\n", "\n");
+                    oData.script = oData.script.Replace("\\\"", "\"");
                     oData.disable = true;
                     break;
                 case DialogueType.Check:
@@ -86,19 +92,24 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                     break;
                 case DialogueType.Mind:
                     dialogue.script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
+
+                    dialogue.script = dialogue.script.Replace("\\\"", "\"");
                     dialogue.mindScript = array[i].Obj.GetString("option2").Replace("\\n", "\n");
+                    dialogue.mindScript = dialogue.mindScript.Replace("\\\"", "\"");
                     //array[i].Obj.GetString("info");
                     break;
                 case DialogueType.InteractResult:
-                    dialogue.script = "주사위 수 : " + array[i].Obj.GetString("info");
+                    dialogue.script = array[i].Obj.GetString("info");
 
                     dialogue.interactResultDatas[0] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[0].locked = false;
                     dialogue.interactResultDatas[0].script = array[i].Obj.GetString("option1").Replace("\\n", "\n");
+                    dialogue.interactResultDatas[0].script = dialogue.interactResultDatas[0].script.Replace("\\\"", "\"");
 
                     dialogue.interactResultDatas[1] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[1].locked = false;
                     dialogue.interactResultDatas[1].script = array[i].Obj.GetString("option2").Replace("\\n", "\n");
+                    dialogue.interactResultDatas[1].script = dialogue.interactResultDatas[1].script.Replace("\\\"", "\"");
 
                     dialogue.interactResultDatas[2] = new InteractResultDialogueData();
                     dialogue.interactResultDatas[2].locked = true;
@@ -106,6 +117,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                     {
                         dialogue.interactResultDatas[2].locked = false;
                         dialogue.interactResultDatas[2].script = array[i].Obj.GetString("option3").Replace("\\n", "\n");
+                        dialogue.interactResultDatas[2].script = dialogue.interactResultDatas[2].script.Replace("\\\"", "\"");
                     }
                     
                     
@@ -176,8 +188,8 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         playBtnPanel.SetActive(false);
         CharacterData cData = GetCharacterData(curDialogue.characterType);
 
-      
-        
+        nextText.color = new Color(1, 1, 1, 1f);
+
 
         if (curDialogue.type == DialogueType.Normal ||
             curDialogue.type == DialogueType.Check ||
@@ -213,6 +225,7 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
         }
         else if (curDialogue.type == DialogueType.Mind)
         {
+            nextText.color = new Color(1, 1, 1, 0.5f);
             playBtnPanel.SetActive(true);
             curMindDialoguePanel = Instantiate(mindDialgouePanelPrefab, parentTr);
             curMindDialoguePanel.SetData(curDialogue,cData);

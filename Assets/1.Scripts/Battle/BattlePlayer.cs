@@ -45,7 +45,7 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         playerPanel.SetActive(true);
         bubble.gameObject.SetActive(true);
         bubble.dialogueText.text = startBattleDialogue;
-        SoundMgr.Instance?.PlaySound("Alice");
+        //SoundMgr.Instance?.PlaySound("Alice");
     }
 
     public void EndBattle()
@@ -188,7 +188,7 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         optionPanel.SetActive(false);
         bubble.gameObject.SetActive(true);
         bubble.dialogueText.text = BattlePlayer.Instance.roundBehaviourInfos[round].roundEndScript;
-        SoundMgr.Instance?.PlaySound("Alice");
+        //SoundMgr.Instance?.PlaySound("Alice");
         PlayerBattleOption.selectedOption = null;
     }
 

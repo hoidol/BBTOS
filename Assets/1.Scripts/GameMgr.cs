@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameMgr : MonoSingleton<GameMgr>
 {
-
+    public GameObject dragInfo;
     public GameMode[] gameModes;
     GameMode curGameMode;
     public GameModeType curModeType;
@@ -38,7 +38,7 @@ public class GameMgr : MonoSingleton<GameMgr>
     {
         DialogueMgr.Instance.StartDialogue(0, () =>
         {
-
+            dragInfo.SetActive(true);
         });
     }
 

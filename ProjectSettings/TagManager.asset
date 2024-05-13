@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Interact
   - ExplorerArea
+  - CatArea
   layers:
   - Default
   - TransparentFX

@@ -25,6 +25,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
     public RoundBehaviourInfo[] roundBehaviourInfos;
 
     public SkillApplyInfo[] skillApplyInfos;
+    public GameObject[] diceImages;
     //public string endBattleDialogue;
 
     ArrowPointer pointer;
@@ -47,7 +48,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         }
        
         battleOption.gameObject.SetActive(false);
-        hpImg.fillAmount = 1;
+        hpImg.fillAmount = curHp/maxHp;
     }
 
     public virtual void StartBattle()
@@ -56,7 +57,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
 
         battleOption.bottomInfoObject.gameObject.SetActive(false);
         battleOption.dialogueText.text = startBattleDialogue;
-        SoundMgr.Instance?.PlaySound(key);
+        //SoundMgr.Instance?.PlaySound(key);
     }
     public virtual void EndBattle()
     {
@@ -70,11 +71,9 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         //battleOption.gameObject.SetActive(true);
         //battleOption.dialogueText.text = roundBehaviourInfos[round].roundStartScript;
         Debug.Log($"Key {key}   releaseDebuff {skillApplyInfos[round].releaseDebuff}");
-        if (skillApplyInfos[round].releaseDebuff != 0)
-        {
-            Debug.Log($"버프 해제 Key {key}   releaseDebuff {skillApplyInfos[round].releaseDebuff}");
-            debuffObj.SetActive(false);
-        }
+        
+
+
     }
 
     public virtual void StartSelect(int round)
@@ -87,6 +86,19 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
 
         target = roundBehaviourInfos[round].roundSelectInfos[0].target.GetComponent<IBattleUnit>();
 
+        for(int i =0;i< diceImages.Length; i++)
+        {
+            if(i < roundBehaviourInfos[round].roundSelectInfos[0].diceTypes.Length)
+            {
+                diceImages[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                diceImages[i].gameObject.SetActive(false);
+            }
+            
+            
+        }
     }
 
     public void UpdatePointer(int round)
@@ -119,6 +131,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         if(skillApplyInfos[round].replaceDiceObject != null)
         {
             skillApplyInfos[round].replaceDiceObject.transform.localScale = Vector3.zero;
+
             skillApplyInfos[round].replaceDiceObject.transform.DOScale(1, 0.3f);
             skillApplyInfos[round].replaceDiceObject.SetActive(true);
         }
@@ -144,14 +157,38 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         }
         else
         {
+            if (skillApplyInfos[round].replaceDiceObject != null)
+            {
+                Transform replaceDiceTr = skillApplyInfos[round].replaceDiceObject.transform;
+                replaceDiceTr.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                replaceDiceTr.position = DiceTargetPointTr.position;
+                replaceDiceTr.DOMove(targetEnemy.battleOption.transform.position, 1).OnComplete(() => {
 
-            if (skillApplyInfos[round].damage != 0)
-                targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
-            if (skillApplyInfos[round].heal != 0)
-                targetEnemy.ChangeHp(skillApplyInfos[round].heal);
-            targetEnemy.Debuff(skillApplyInfos[round].debuff);
 
-            endEffect.Invoke();
+                    if (skillApplyInfos[round].damage != 0)
+                        targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
+                    if (skillApplyInfos[round].heal != 0)
+                        targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                    targetEnemy.Debuff(skillApplyInfos[round].debuff);
+
+                    endEffect.Invoke();
+                });
+
+                replaceDiceTr.GetComponent<Image>().DOFade(0, 0.3f).SetDelay(0.7f);
+               
+            }
+            else
+            {
+                if (skillApplyInfos[round].damage != 0)
+                    targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
+                if (skillApplyInfos[round].heal != 0)
+                    targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                targetEnemy.Debuff(skillApplyInfos[round].debuff);
+
+                endEffect.Invoke();
+            }
+
+           
         }
         
  
@@ -162,9 +199,13 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         pointer.gameObject.SetActive(false);
         battleOption.bottomInfoObject.gameObject.SetActive(false);
         battleOption.dialogueText.text = roundBehaviourInfos[round].roundEndScript;
-        SoundMgr.Instance?.PlaySound(key);
+        //SoundMgr.Instance?.PlaySound(key);
 
-
+        if (skillApplyInfos[round].releaseDebuff != 0)
+        {
+            Debug.Log($"버프 해제 Key {key}   releaseDebuff {skillApplyInfos[round].releaseDebuff}");
+            debuffObj.SetActive(false);
+        }
 
         if (skillApplyInfos[round].replaceDiceObject != null)
         {

@@ -34,6 +34,8 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
     public Image[] skillDiceImgs;
     public SkillInfoPopUp skillInfoPopUp;
 
+    public GameObject skillInfo;
+
     void Awake()
     {
         GetComponent<Button>().onClick.AddListener(OnClickedBtn);
@@ -56,6 +58,13 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
 
         pointer.gameObject.SetActive(false);
         skillListPanel.gameObject.SetActive(false);
+
+        if (!selectOptionInfo.disableChoice)
+        {
+            if(skillEntryPanels.Length > 0)
+                skillInfo.SetActive(true);
+        }
+            
     }
 
     void UpdateSkill()
@@ -193,14 +202,17 @@ public class PlayerBattleOption : BattleOption, IPointerEnterHandler, IPointerEx
         {
             selectedOption.Focus(false);
         }
+
+        skillInfo.SetActive(false);
         focusOutlineAnimator.Play("Selected");
         selectedOption = this;
 
+        SoundMgr.Instance.PlaySound($"Skill{s.skillNumber}");
         skillListPanel.SetActive(false);
         PlayerBattleOption.selectedOption = this;
         BattlePlayer.Instance.endTurnButton.SetActive(true);
         Debug.Log("BattlePlayerOption OnClickedBtn");
-        SoundMgr.Instance?.PlaySound("Button");
+        
         selectedOption = this;
         curSkill = s;
         curSkillImage.sprite = s.sprite;

@@ -12,6 +12,7 @@ public class MindDialgouePanel : MonoBehaviour
     public Image barImage;
 
     Dialogue dialogue;
+    public TMP_Text mindTitleText;
     public void SetData(Dialogue dialogue, CharacterData cData)
     {
         this.dialogue = dialogue;
@@ -19,11 +20,14 @@ public class MindDialgouePanel : MonoBehaviour
         nameText.color = cData.color;
         barImage.color = cData.color;
         dialogueText.text = dialogue.script;
+        mindTitleText.color = cData.color;
+        mindTitleText.gameObject.SetActive(false);
 
     }
     public Color mindColor;
     public void OpenMind()
     {
+        mindTitleText.gameObject.SetActive(true);
         dialogueText.text = dialogue.mindScript;
         dialogueText.color = mindColor;
     }

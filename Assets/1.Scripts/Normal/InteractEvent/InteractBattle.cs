@@ -5,6 +5,7 @@ using System;
 public class InteractBattle : InteractEvent
 {
     bool interacting;
+    public GameObject candy;
     public override void Interact(Action eCallback)
     {
         interacting = true;
@@ -20,9 +21,10 @@ public class InteractBattle : InteractEvent
 
         FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
         {
-            
+            SoundMgr.Instance?.PlayBGM(1);
             GameMgr.Instance.gameModes[0].gameObject.SetActive(false);
             GameMgr.Instance.gameModes[1].gameObject.SetActive(true);
+            candy.SetActive(false);
         }, () => {
             GameMgr.Instance.SwitchMode(GameModeType.Battle);
         });

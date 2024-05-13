@@ -34,6 +34,8 @@ public class Cat : MonoSingleton<Cat>
     public GameObject holy;
     public GameObject worldCanvasObject;
     public TMP_Text foundText;
+
+    public GameObject infoObject; 
     void Update()
     {
         if (GameMgr.Instance.curModeType != GameModeType.Normal)
@@ -63,6 +65,8 @@ public class Cat : MonoSingleton<Cat>
 
                 if (!found)
                 {
+                     
+
                     transform.position = Vector2.Lerp(transform.position, originPoint.position, 5 * Time.deltaTime);
                     holy.SetActive(false);
                 }
@@ -70,6 +74,8 @@ public class Cat : MonoSingleton<Cat>
             }
             foundInteractTimer -= Time.deltaTime;
         }
+
+
         if (DialogueMgr.Instance.opened)
             return;
         if (Input.GetMouseButtonDown(0))
@@ -95,6 +101,7 @@ public class Cat : MonoSingleton<Cat>
             if (interacting)
                 return;
 
+            infoObject.SetActive(false);
             Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             Vector2 point = dragVector + worldPoint;
@@ -136,7 +143,7 @@ public class Cat : MonoSingleton<Cat>
                         found = true;
                         worldCanvasObject.SetActive(true);
                         foundText.text = cols[i].GetComponent<InteractObject>().foundText;
-                        foundInteractTimer = 2;
+                        foundInteractTimer = 1.5f;
                     }
                 }
             }

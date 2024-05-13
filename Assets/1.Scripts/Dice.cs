@@ -41,9 +41,8 @@ public class Dice : MonoSingleton<Dice>
         
         //CameraMgr.Instance.ZoomIn(zoomInTr.position);
         zoomCanvas.gameObject.SetActive(true);
-        yield return new WaitForSeconds(1);
         SoundMgr.Instance?.PlaySound("DiceResult");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1.5f);
 
         endCallback.Invoke(UnityEngine.Random.Range(0, 7));
 
