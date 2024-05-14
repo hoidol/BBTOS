@@ -41,8 +41,9 @@ public class BattleMode : GameMode
 
         Invoke("ReadyBattle", 1.5f);
     }
+
     
-    
+
     public void EndMode()
     {
         playerArea.transform.DOMove(playerAreaPoint[0].position, 1.5f);
@@ -62,11 +63,13 @@ public class BattleMode : GameMode
 
             GameMgr.Instance.gameModes[0].gameObject.SetActive(true);
             GameMgr.Instance.gameModes[1].gameObject.SetActive(false);
-        }, () => { GameMgr.Instance.SwitchMode(GameModeType.Normal);
-            endBattleEvents[0].Interact(() => {
+        }, () => { 
+            GameMgr.Instance.SwitchMode(GameModeType.Normal);
+            /*endBattleEvents[0].Interact(() => {
 
                 FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
                 {
+                    SoundMgr.Instance.StopBGM();
                     endBattleEvents[1].Interact(() =>
                     {
                     });
@@ -74,7 +77,7 @@ public class BattleMode : GameMode
                 {
                 });
                 
-            });
+            });*/
 
         });
         gameObject.SetActive(false);

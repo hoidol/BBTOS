@@ -146,11 +146,11 @@ public class BattlePlayer : MonoSingleton<BattlePlayer>, IBattleUnit
         PlayerBattleOption.selectedOption.curSkill.ExcuteSkill(targetUnit, nums);
         BattleEnemy enemy = curOptionInfo.target.GetComponent<BattleEnemy>();
 
-        if(skillApplyInfos[round].damage != 0)
+        if(skillApplyInfos[round].displayDamage)
             enemy.ChangeHp(skillApplyInfos[round].damage);
 
-        if (skillApplyInfos[round].heal != 0)
-            enemy.ChangeHp(skillApplyInfos[round].heal);
+        //if (skillApplyInfos[round].heal != 0)
+       //     enemy.ChangeHp(skillApplyInfos[round].heal);
 
         endEffect.Invoke();
     }
@@ -238,8 +238,9 @@ public class SelectOptionInfo
 [System.Serializable]
 public class SkillApplyInfo
 {
+    public bool displayDamage;
     public int damage;
-    public int heal;
+    //public int heal;
     public int debuff;
     public int releaseDebuff;
     public bool dontMoveDice;

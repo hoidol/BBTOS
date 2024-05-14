@@ -20,6 +20,7 @@ public class FadeEffect : MonoSingleton<FadeEffect>
     {
         gameObject.SetActive(true);
         canvasGroup.alpha = 0;
+        StopAllCoroutines();
         StartCoroutine(CoFadeOut(time, endFadeOut, endFadeIn));
     }
 
@@ -27,6 +28,7 @@ public class FadeEffect : MonoSingleton<FadeEffect>
     {
         gameObject.SetActive(true);
         canvasGroup.alpha = 1;
+        StopAllCoroutines();
         StartCoroutine(CoFadeIn(time, endFadeInEffect));
 
     }
@@ -65,8 +67,7 @@ public class FadeEffect : MonoSingleton<FadeEffect>
             canvasGroup.alpha = timer / time;
             yield return null;
         }
-        endFadeEffect.Invoke();
+        endFadeEffect?.Invoke();
         gameObject.SetActive(false);
-
     }
 }

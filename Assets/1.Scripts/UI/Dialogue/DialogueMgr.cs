@@ -120,8 +120,6 @@ public class DialogueMgr : MonoSingleton<DialogueMgr>
                         dialogue.interactResultDatas[2].script = dialogue.interactResultDatas[2].script.Replace("\\\"", "\"");
                     }
                     
-                    
-
                     break;
 
             }

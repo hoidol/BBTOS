@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMgr : MonoSingleton<GameMgr>
 {
@@ -24,9 +25,10 @@ public class GameMgr : MonoSingleton<GameMgr>
         return null;
     }
 
+    public InteractEvent[] endBattleEvents;
     public void Start()
     {
-        SoundMgr.Instance.PlayBGM(0);
+        SoundMgr.Instance?.PlayBGM(0);
         curModeType = GameModeType.Normal;
         curGameMode = GetGameMode(curModeType);
         curGameMode.StartMode();
@@ -51,6 +53,21 @@ public class GameMgr : MonoSingleton<GameMgr>
             {
                 gameModes[i].StartMode();
             }
+        }
+
+        if(curModeType == GameModeType.Normal)
+        {
+            endBattleEvents[0].Interact(() => {
+
+                FadeEffect.Instance.PlayFadeOutAndIn(1, () =>
+                {
+                    SoundMgr.Instance.StopBGM();
+                    SceneManager.LoadScene("End");
+                }, () =>
+                {
+                });
+
+            });
         }
 
 

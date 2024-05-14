@@ -12,8 +12,10 @@ public class DialogueOption : MonoBehaviour
         GetComponent<Button>().onClick.AddListener(OnClickedBtn);
         optionText = GetComponentInChildren<TMP_Text>();
     }
+    DialogueOptionData data;
     public void SetDialogue(DialogueOptionData data)
     {
+        this.data = data;
         optionText.text = data.script;
         if (data.disable)
         {
@@ -28,6 +30,8 @@ public class DialogueOption : MonoBehaviour
 
     void OnClickedBtn()
     {
+        if (data.disable)
+            return;
         DialogueMgr.Instance.OnClickedNextBtn();
     }
 }

@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class StartMgr : MonoBehaviour
 {
-    bool cliched;
+    public bool cliched;
     public void OnClickedStart()
     {
-        if (cliched)
-            return;
-        cliched = true;
+        //if (cliched)
+        //    return;
+
+        //cliched = true;
         FadeEffect.Instance.PlayFadeOutAndIn(1,
             ()=> {
                 SceneManager.LoadScene("Game");

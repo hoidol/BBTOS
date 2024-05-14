@@ -5,6 +5,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 public class BattleEnemy : MonoBehaviour, IBattleUnit
 {
     public string key;
@@ -25,7 +26,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
     public RoundBehaviourInfo[] roundBehaviourInfos;
 
     public SkillApplyInfo[] skillApplyInfos;
-    public GameObject[] diceImages;
+    public Image[] diceImages;
     //public string endBattleDialogue;
 
     ArrowPointer pointer;
@@ -90,6 +91,16 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         {
             if(i < roundBehaviourInfos[round].roundSelectInfos[0].diceTypes.Length)
             {
+
+                if(roundBehaviourInfos[round].roundSelectInfos[0].diceTypes[i] == DiceType.Four)
+                {
+                    diceImages[i].sprite = Resources.Load<Sprite>($"Sprites/DiceThum_Four");
+                }
+                else
+                {
+                    diceImages[i].sprite = Resources.Load<Sprite>($"Sprites/DiceThum_Six");
+                }
+
                 diceImages[i].gameObject.SetActive(true);
             }
             else
@@ -131,7 +142,7 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         if(skillApplyInfos[round].replaceDiceObject != null)
         {
             skillApplyInfos[round].replaceDiceObject.transform.localScale = Vector3.zero;
-
+            skillApplyInfos[round].replaceDiceObject.transform.position = dicePoint.position;
             skillApplyInfos[round].replaceDiceObject.transform.DOScale(1, 0.3f);
             skillApplyInfos[round].replaceDiceObject.SetActive(true);
         }
@@ -146,10 +157,9 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
             {
                 diceList[i].MoveTo(target.DiceTargetPointTr.position, true, (dice) =>
                 {
-                    if (skillApplyInfos[round].damage != 0)
-                        targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
-                    if (skillApplyInfos[round].heal != 0)
-                        targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                    if (skillApplyInfos[round].displayDamage)
+                        targetEnemy.ChangeHp(skillApplyInfos[round].damage);
+
                     targetEnemy.Debuff(skillApplyInfos[round].debuff);
                     endEffect?.Invoke();
                 });
@@ -161,14 +171,12 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
             {
                 Transform replaceDiceTr = skillApplyInfos[round].replaceDiceObject.transform;
                 replaceDiceTr.GetComponent<Image>().color = new Color(1, 1, 1, 1);
-                replaceDiceTr.position = DiceTargetPointTr.position;
+                replaceDiceTr.position = dicePoint.position;
                 replaceDiceTr.DOMove(targetEnemy.battleOption.transform.position, 1).OnComplete(() => {
 
 
-                    if (skillApplyInfos[round].damage != 0)
-                        targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
-                    if (skillApplyInfos[round].heal != 0)
-                        targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                    if (skillApplyInfos[round].displayDamage)
+                        targetEnemy.ChangeHp(skillApplyInfos[round].damage);
                     targetEnemy.Debuff(skillApplyInfos[round].debuff);
 
                     endEffect.Invoke();
@@ -179,10 +187,8 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
             }
             else
             {
-                if (skillApplyInfos[round].damage != 0)
-                    targetEnemy.ChangeHp(-skillApplyInfos[round].damage);
-                if (skillApplyInfos[round].heal != 0)
-                    targetEnemy.ChangeHp(skillApplyInfos[round].heal);
+                if (skillApplyInfos[round].displayDamage)
+                    targetEnemy.ChangeHp(skillApplyInfos[round].damage);
                 targetEnemy.Debuff(skillApplyInfos[round].debuff);
 
                 endEffect.Invoke();
@@ -225,20 +231,24 @@ public class BattleEnemy : MonoBehaviour, IBattleUnit
         hpText.text = null;
         if (amount > 0)
         {
+            hpText.color = Color.green;
             hpText.transform.DOScale(1, 0.1f).OnComplete(() => {
                 hpText.transform.DOScale(0, 0.3f).SetDelay(2);
             });
             hpText.text = "+"+amount;
-            hpText.color = Color.green;
             SoundMgr.Instance?.PlaySound("Heal");
         }
-        else if(amount < 0)
+        else if(amount <= 0)
         {
             SoundMgr.Instance?.PlaySound("Attack");
             hpText.transform.DOScale(1, 0.1f).OnComplete(()=> {
                 hpText.transform.DOScale(0, 0.3f).SetDelay(2);
             });
             hpText.text = amount.ToString();
+            if(amount== 0)
+            {
+                hpText.text = "-0";
+            }
             hpText.color = Color.red;
         }
 

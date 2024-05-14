@@ -21,13 +21,13 @@ public class MindDialgouePanel : MonoBehaviour
         barImage.color = cData.color;
         dialogueText.text = dialogue.script;
         mindTitleText.color = cData.color;
-        mindTitleText.gameObject.SetActive(false);
+        //mindTitleText.gameObject.SetActive(false);
 
     }
     public Color mindColor;
     public void OpenMind()
     {
-        mindTitleText.gameObject.SetActive(true);
+        //mindTitleText.gameObject.SetActive(true);
         dialogueText.text = dialogue.mindScript;
         dialogueText.color = mindColor;
     }
